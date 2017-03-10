@@ -40,6 +40,7 @@
     "moment": "^2.17.1"
   },
   "devDependencies": {
+    "react-router": "^3.0.2",
     "typescript": "^2.1.5",
     "ts-loader": "^2.0.0",
     "webpack": "^2.2.1",
@@ -52,6 +53,7 @@
     "style-loader": "^0.13.1",
     "file-loader": "^0.10.0",
     "url-loader": "^0.5.7",
+    "html-webpack-plugin": "^2.28.0",
     "extract-text-webpack-plugin": "^2.0.0-rc.3",
     "jest": "^18.1.0",
     "ts-jest": "^18.0.3",

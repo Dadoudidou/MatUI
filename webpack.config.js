@@ -15,85 +15,8 @@ const production = (process.env.NODE_ENV) ? process.env.NODE_ENV === 'production
 console.log(tag_compiler, "Export en mode " + process.env.NODE_ENV.toUpperCase());
 //#endregion
 
-//#region FUNCTIONS
-function LoadApplications(apps_dir, indexFiles, onAddApplication) {
 
-
-    if (indexFiles == undefined) indexFiles = ["index.js", "index.jsx", "index.ts", "index.tsx"];
-    if (onAddApplication == undefined) onAddApplication = function (name, file) {
-        let obj = {};
-        obj[name] = [file];
-        return obj;
-    }
-
-    let applications = {};
-    let files;
-    try { files = fs.readdirSync(apps_dir); } catch (e) { }
-    if (!files) {
-        console.log(tag_compiler, tag_compiler_err, "No files in " + apps_dir);
-        return;
-    }
-
-    files.forEach(function (file) {
-        //check if file is directory
-        let _npath = path.resolve(apps_dir, file), _npathStats;
-        try { _npathStats = fs.lstatSync(_npath); } catch (e) { }
-        if (_npathStats && _npathStats.isDirectory()) {
-
-            let _trouve = false, i = 0, _nfile;
-            //recherche des fichiers index
-            while (_trouve == false && i < indexFiles.length) {
-                _nfile = path.resolve(_npath, indexFiles[i]);
-                let _nfileStats;
-                let _logtest = "file [" + _nfile + "]";
-                try { _nfileStats = fs.lstatSync(_nfile); } catch (e) { }
-                if (_nfileStats && _nfileStats.isFile()) {
-                    console.log(tag_compiler, tag_compiler_tests, _logtest, "OK");
-                    _trouve = true;
-                } else {
-                    console.log(tag_compiler, tag_compiler_tests, _logtest, "NOT FOUND");
-                }
-                i++;
-            }
-            //ajoute ou non
-            if (_trouve) {
-                applications = assign(applications, onAddApplication(file, _nfile));
-                /*applications[file] = [
-                    'webpack-dev-server/client?http://localhost:3000',
-                    'webpack/hot/only-dev-server',
-                    _nfile
-                ];*/
-            }
-        }
-    });
-
-    return applications;
-}
-
-//#endregion
-
-//#region CHARGEMENT APPLICATIONS
-var apps_dir = path.resolve(__dirname, './__scripts__/applications/');
-var applications = LoadApplications(apps_dir, ["index.ts", "index.tsx"], function (name, file) {
-    let obj = {};
-    obj[name] = [];
-    if (!production) {
-        obj[name].push('webpack-dev-server/client?http://localhost:3000');
-        obj[name].push('webpack/hot/only-dev-server');
-    }
-    obj[name].push(file);
-
-    return obj;
-});
-
-
-let length = 0; for (var i in applications) { length++; }
-if (length == 0) {
-    console.log(tag_compiler, tag_compiler_err, "Cannot found applications");
-}
-//#endregion
-
-var outFolder = path.resolve(__dirname, "./wwwRoot");
+var outFolder = path.resolve(__dirname, "./dist");
 var webpackConfig = {
     cache: false,
     node: {
@@ -104,7 +27,13 @@ var webpackConfig = {
 // **********************
 // ENTRIES
 // **********************
-webpackConfig.entry = applications;
+webpackConfig.entry = {
+    "main": [
+        "./doc/index.tsx",
+        'webpack-dev-server/client?http://localhost:3000',
+        'webpack/hot/only-dev-server'
+    ]
+};
 
 // **********************
 // OUTPUT
@@ -120,7 +49,8 @@ webpackConfig.output = {
 // **********************
 webpackConfig.resolve = {
     modules: [
-        path.resolve(__dirname, "./__scripts__"),
+        path.resolve(__dirname, "./doc"),
+        path.resolve(__dirname, "./src"),
         "node_modules"
     ],
     extensions: [".webpack.js", ".js", ".ts", ".tsx"]
@@ -181,7 +111,6 @@ webpackConfig.module.loaders.push(
 );
 
 //Sass Css
-
 const extractCss = new ExtractTextPlugin({
     filename: "css/[name].css",
     disable: !production
@@ -234,18 +163,19 @@ webpackConfig.module.loaders.push(
     }
 );
 
-//handlebars
-webpackConfig.module.loaders.push(
-    {
-        test: /\.handlebars$/,
-        loader: 'handlebars-loader',
-        query: {
-            helperDirs: [
-                path.resolve(__dirname, "./__scripts__/handlebars")
-            ]
-        }
+//template html files
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+webpackConfig.plugins.push(new HtmlWebpackPlugin({
+    template: path.resolve(__dirname, "doc/index.html"),
+    hash: false,
+    //favicon: path.resolve(__dirname, ""),
+    filename: "index.html",
+    inject: "body",
+    minify: {
+        collapseWhitespace: (production) ? true : false
     }
-);
+}));
+
 
 
 module.exports = webpackConfig;

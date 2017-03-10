@@ -23,10 +23,24 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="doc\index.tsx" />
+    <TypeScriptCompile Include="doc\routes\Home\Home.tsx" />
+    <TypeScriptCompile Include="doc\routes\Home\index.ts" />
+    <TypeScriptCompile Include="doc\routes\index.ts" />
+    <TypeScriptCompile Include="src\index.ts" />
+    <TypeScriptCompile Include="src\Styles\colors.ts" />
+    <TypeScriptCompile Include="src\Themes\IPalette.ts" />
+    <TypeScriptCompile Include="src\Themes\ITheme.ts" />
+    <TypeScriptCompile Include="src\Themes\ITypography.ts" />
+    <TypeScriptCompile Include="src\Themes\Theme.ts" />
+    <TypeScriptCompile Include="src\Themes\LightBaseTheme.ts" />
+    <TypeScriptCompile Include="src\Styles\transition.ts" />
+    <TypeScriptCompile Include="src\Styles\typography.ts" />
     <TypeScriptCompile Include="typings\webpack.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <Content Include="doc\index.html" />
     <Content Include="webpack.config.js" />
     <Content Include="webpack.server.js" />
   </ItemGroup>
@@ -35,7 +49,7 @@
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\" />
+    <Folder Include="src\Utils\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
